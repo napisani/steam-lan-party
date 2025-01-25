@@ -9,35 +9,92 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useGames } from './useGames';
 import { useUser } from './useUser';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useOwnedGames } from './useOwnedGames';
-import { OwnedGameInfo } from './games.types';
+import { GameInfo, OwnedGameInfo } from './games.types';
+import { Error } from '@/error/Error';
+import { Typography } from '@mui/material';
 
 export function UserGameList({ entries }: { entries: UserEntry[] }) {
-  const { allUserIdResults, allUserIds } = useUser({ entries });
+  const {
+    allUserIds,
+    isLoading: isLoadingUser,
+    isError: isUserError,
+    error: userError,
+  } = useUser({ entries });
   const { userIdToGames, allUserGames } = useOwnedGames({
     userIds: allUserIds,
   });
-  const { games } = useGames();
+  const [sortField, setSortField] = useState<
+    'missingCount' | 'unitPrice' | 'totalPrice'
+  >('missingCount');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+  const { games } = useGames({ appids: allUserGames });
   const gameIdToName = useMemo(() => {
-    if (!games.data || games.isLoading || games.isError) {
+    if (!games) {
       return {};
     }
-    return games.data.reduce(
+    return games.reduce(
       (acc, game) => {
-        acc[game.appid] = game.name;
+        acc[game.appid] = game;
         return acc;
       },
-      {} as Record<number, string>,
+      {} as Record<number, GameInfo>,
     );
   }, [games]);
 
-  // const loading = results.some((r) => r.isLoading) || games.isLoading;
+  const rows = useMemo(() => {
+    const unsortedRows = allUserGames.map((appId) => {
+      const missingCount = allUserIds.reduce((acc, userId) => {
+        const found = !!userIdToGames[userId]?.games.find(
+          (g: OwnedGameInfo) => g.appid === appId,
+        );
+        return acc + (found ? 0 : 1);
+      }, 0);
+      const userIdToGameFound = Object.fromEntries(
+        allUserIds.map((userId) => {
+          const found = !!userIdToGames[userId]?.games.find(
+            (g: OwnedGameInfo) => g.appid === appId,
+          );
+          return [userId, found];
+        }),
+      );
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+      const unitPrice = gameIdToName[appId]?.price_overview?.final ?? -1;
+      const totalPrice = unitPrice === -1 ? -1 : unitPrice * missingCount;
+
+      return { appId, userIdToGameFound, missingCount, unitPrice, totalPrice };
+    });
+
+    return unsortedRows.sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a[sortField] - b[sortField];
+      } else {
+        return b[sortField] - a[sortField];
+      }
+    });
+  }, [userIdToGames, allUserIds, allUserGames, sortField, sortOrder]);
+
+  const handleSortChange = (
+    field: 'missingCount' | 'unitPrice' | 'totalPrice',
+  ) => {
+    if (field === sortField) {
+      setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
+  };
+
+  const isLoading = isLoadingUser;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  const isError = isUserError;
+  if (isError) {
+    return <Error error={userError} defaultMessage="An error occurred" />;
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -47,44 +104,102 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
       >
         <TableHead>
           <TableRow>
-            <TableCell>Game</TableCell>
+            <TableCell>
+              <Typography fontStyle="bold" fontWeight="bold">
+                Game
+              </Typography>
+            </TableCell>
             {allUserIds.map((userId) => (
               <TableCell align="right" key={'user' + userId}>
-                {userId}
+                <Typography fontStyle="bold" fontWeight="bold">
+                  {userId}
+                </Typography>
               </TableCell>
             ))}
-            <TableCell align="right">Missing Count</TableCell>
+            <TableCell
+              align="right"
+              onClick={() => handleSortChange('missingCount')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Typography fontStyle="bold" fontWeight="bold">
+                Missing Count{' '}
+                {sortField === 'missingCount'
+                  ? sortOrder === 'asc'
+                    ? '▲'
+                    : '▼'
+                  : ''}
+              </Typography>
+            </TableCell>
+            <TableCell
+              align="right"
+              onClick={() => handleSortChange('unitPrice')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Typography fontStyle="bold" fontWeight="bold">
+                Unit Price{' '}
+                {sortField === 'unitPrice'
+                  ? sortOrder === 'asc'
+                    ? '▲'
+                    : '▼'
+                  : ''}
+              </Typography>
+            </TableCell>
+            <TableCell
+              align="right"
+              onClick={() => handleSortChange('totalPrice')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Typography fontStyle="bold" fontWeight="bold">
+                Total Price{' '}
+                {sortField === 'totalPrice'
+                  ? sortOrder === 'asc'
+                    ? '▲'
+                    : '▼'
+                  : ''}
+              </Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {allUserGames.map((appId) => {
-            let missingCount = 0;
-            return (
-              <TableRow
-                key={'app' + appId}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {gameIdToName[appId] ?? appId}
-                </TableCell>
-                {allUserIds.map((userId) => {
-                  const found = !!userIdToGames[userId]?.games.find(
-                    (g: OwnedGameInfo) => g.appid === appId,
-                  );
-                  if (!found) {
-                    missingCount++;
-                  }
-
-                  return (
-                    <TableCell align="right" key={'userApp' + userId + appId}>
-                      {found ? 'Yes' : 'No'}
-                    </TableCell>
-                  );
-                })}
-                <TableCell align="right">{missingCount}</TableCell>
-              </TableRow>
-            );
-          })}
+          {rows.map(
+            ({
+              appId,
+              userIdToGameFound,
+              missingCount,
+              unitPrice,
+              totalPrice,
+            }) => {
+              return (
+                <TableRow
+                  key={'app' + appId}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {gameIdToName[appId]?.name ?? appId}
+                  </TableCell>
+                  {allUserIds.map((userId) => {
+                    const found = userIdToGameFound[userId];
+                    return (
+                      <TableCell align="right" key={'userApp' + userId + appId}>
+                        {found ? 'Yes' : 'No'}
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell align="right">{missingCount}</TableCell>
+                  <TableCell align="right">
+                    {unitPrice === -1
+                      ? 'N/A'
+                      : `$${(unitPrice / 100).toFixed(2)}`}
+                  </TableCell>
+                  <TableCell align="right">
+                    {totalPrice === -1
+                      ? 'N/A'
+                      : `$${(totalPrice / 100).toFixed(2)}`}
+                  </TableCell>
+                </TableRow>
+              );
+            },
+          )}
         </TableBody>
       </Table>
     </TableContainer>

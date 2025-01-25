@@ -42,16 +42,18 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
           data: e.id,
           isLoading: false,
           isError: false,
+          error: null,
         })),
     ];
   }, [results]);
 
   const isLoading = allUserIdResults.some((r) => r.isLoading);
   const isError = allUserIdResults.some((r) => r.isError);
+  const error = allUserIdResults.find((r) => r.isError)?.error;
 
   const allUserIds = allUserIdResults
     .map((r) => r.data)
     .filter(Boolean) as string[];
 
-  return { allUserIdResults, isLoading, isError, allUserIds };
+  return { allUserIdResults, isLoading, isError, allUserIds, error };
 }

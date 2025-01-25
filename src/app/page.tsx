@@ -9,19 +9,19 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 
 export default function Home() {
   const queryClient = new QueryClient();
-  const [entries, setEntries] = useState<UserEntry[]>([]);
-
-  useEffect(() => {
-    setEntries(() => {
+  const [entries, setEntries] = useState<UserEntry[]>(() => {
+    if (typeof window !== 'undefined') {
       const savedEntries = window.localStorage.getItem('entries');
       return savedEntries ? JSON.parse(savedEntries) : [];
-    });
-  },[]);
+    }
+    return [];
+  });
 
   useEffect(() => {
-    window.localStorage.setItem('entries', JSON.stringify(entries));
+    if (entries.length > 0) {
+      window.localStorage.setItem('entries', JSON.stringify(entries));
+    }
   }, [entries]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <div>
