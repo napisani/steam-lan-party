@@ -14,6 +14,7 @@ import { useOwnedGames } from './useOwnedGames';
 import { GameInfo, OwnedGameInfo } from './games.types';
 import { Error } from '@/error/Error';
 import { Typography } from '@mui/material';
+import { UserDisplay } from './UserDisplay';
 
 export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const {
@@ -47,14 +48,14 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const rows = useMemo(() => {
     const unsortedRows = allUserGames.map((appId) => {
       const missingCount = allUserIds.reduce((acc, userId) => {
-        const found = !!userIdToGames[userId]?.games.find(
+        const found = !!userIdToGames[userId]?.games?.find(
           (g: OwnedGameInfo) => g.appid === appId,
         );
         return acc + (found ? 0 : 1);
       }, 0);
       const userIdToGameFound = Object.fromEntries(
         allUserIds.map((userId) => {
-          const found = !!userIdToGames[userId]?.games.find(
+          const found = !!userIdToGames[userId]?.games?.find(
             (g: OwnedGameInfo) => g.appid === appId,
           );
           return [userId, found];
@@ -75,6 +76,7 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
       }
     });
   }, [userIdToGames, allUserIds, allUserGames, sortField, sortOrder]);
+  console.log(userIdToGames);
 
   const handleSortChange = (
     field: 'missingCount' | 'unitPrice' | 'totalPrice',
@@ -112,7 +114,7 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
             {allUserIds.map((userId) => (
               <TableCell align="right" key={'user' + userId}>
                 <Typography fontStyle="bold" fontWeight="bold">
-                  {userId}
+                  <UserDisplay userId={userId} />
                 </Typography>
               </TableCell>
             ))}

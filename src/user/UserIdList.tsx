@@ -1,4 +1,5 @@
 import { UserEntry } from './user.types';
+import { UserDisplay } from './UserDisplay';
 import { useUser } from './useUser';
 
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
@@ -27,7 +28,11 @@ export function UserIdList({
             </Typography>
           );
         } else {
-          cmp = <Typography key={idx}>User ID: {result.data}</Typography>;
+          cmp = (
+            <Typography key={idx}>
+              User ID: <UserDisplay userId={result.data} />
+            </Typography>
+          );
         }
         return (
           <Stack

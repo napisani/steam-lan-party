@@ -33,11 +33,13 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
   const isLoading = results.some((r) => r.isLoading);
   const isError = results.some((r) => r.isError);
 
-  const allUserGames = Array.from(new Set(
-    (results.map((r) => r.data).filter(Boolean) as OwnedGamesInfo[])
-      .flatMap((g) => g.games ?? [])
-      .map((g) => g.appid),
-  ));
+  const allUserGames = Array.from(
+    new Set(
+      (results.map((r) => r.data).filter(Boolean) as OwnedGamesInfo[])
+        .flatMap((g) => g.games ?? [])
+        .map((g) => g.appid),
+    ),
+  );
 
   return { userIdToGames, isLoading, isError, allUserGames };
 }

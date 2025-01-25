@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         source: '/steam-store-api/:path*',
         destination: `${STEAM_STORE_API_URL}/:path*`,
       },
+      {
+        source: '/steam-community-api/:path*',
+        destination: `https://steamcommunity.com/:path*`,
+      },
     ];
   },
 };
