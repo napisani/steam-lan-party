@@ -1,3 +1,5 @@
+import { Stack, Typography } from '@mui/material';
+import { useOwnedGames } from './useOwnedGames';
 import { useUser } from './useUser';
 
 export function UserDisplay({ userId }: { userId: string }) {
@@ -6,5 +8,16 @@ export function UserDisplay({ userId }: { userId: string }) {
   const firstUserDetails = allUserDetails.find(
     (d) => d?.steamid === firstUserId,
   );
-  return <>{firstUserDetails?.persona_name ?? userId}</>;
+  const { userIdToGames } = useOwnedGames({ userIds: [firstUserId] });
+  const firstUserGames = userIdToGames[firstUserId];
+  const isPrivate = !!firstUserGames && !('games' in firstUserGames);
+  return (
+    <>
+      {firstUserDetails?.persona_name ?? userId} {/* {isPrivate && ( */}
+      {/*   <Typography aria-label="private" color="error"> */}
+      {/*     (P) */}
+      {/*   </Typography> */}
+      {/* )} */}
+    </>
+  );
 }

@@ -15,6 +15,9 @@ import { GameInfo, OwnedGameInfo } from './games.types';
 import { Error } from '@/error/Error';
 import { Typography } from '@mui/material';
 import { UserDisplay } from './UserDisplay';
+import { MissingCount } from './MissingCount';
+import { Price } from './Price';
+import { PRICE_NOT_FOUND } from './price.utils';
 
 export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const {
@@ -62,8 +65,15 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
         }),
       );
 
-      const unitPrice = gameIdToName[appId]?.price_overview?.final ?? -1;
-      const totalPrice = unitPrice === -1 ? -1 : unitPrice * missingCount;
+      const priceOverview = gameIdToName[appId]?.price_overview ?? {};
+      const unitPrice = priceOverview.final ?? PRICE_NOT_FOUND;
+      const totalPrice =
+        unitPrice === PRICE_NOT_FOUND
+          ? PRICE_NOT_FOUND
+          : unitPrice * missingCount;
+      if (unitPrice === -1) {
+        console.log('unitPrice', priceOverview);
+      }
 
       return { appId, userIdToGameFound, missingCount, unitPrice, totalPrice };
     });
@@ -76,7 +86,8 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
       }
     });
   }, [userIdToGames, allUserIds, allUserGames, sortField, sortOrder]);
-  console.log(userIdToGames);
+
+  const maxTotalPrice = Math.max(...rows.map((r) => r.totalPrice));
 
   const handleSortChange = (
     field: 'missingCount' | 'unitPrice' | 'totalPrice',
@@ -187,16 +198,19 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
                       </TableCell>
                     );
                   })}
-                  <TableCell align="right">{missingCount}</TableCell>
                   <TableCell align="right">
-                    {unitPrice === -1
+                    <MissingCount
+                      missingCount={missingCount}
+                      totalUsers={allUserIds.length}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    {unitPrice === PRICE_NOT_FOUND
                       ? 'N/A'
                       : `$${(unitPrice / 100).toFixed(2)}`}
                   </TableCell>
                   <TableCell align="right">
-                    {totalPrice === -1
-                      ? 'N/A'
-                      : `$${(totalPrice / 100).toFixed(2)}`}
+                    <Price price={totalPrice} highestPrice={maxTotalPrice} />
                   </TableCell>
                 </TableRow>
               );

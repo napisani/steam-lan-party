@@ -29,6 +29,7 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
       .map((userId, i) => [userId, results[i].data]);
     return Object.fromEntries(pairs);
   }, [results]);
+  console.log('ownedGames', results); 
 
   const isLoading = results.some((r) => r.isLoading);
   const isError = results.some((r) => r.isError);
