@@ -18,6 +18,7 @@ import { UserDisplay } from './UserDisplay';
 import { MissingCount } from './MissingCount';
 import { Price } from './Price';
 import { PRICE_NOT_FOUND } from './price.utils';
+import { GameDisplay } from './GameDisplay';
 
 export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const {
@@ -35,6 +36,7 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const { games } = useGames({ appids: allUserGames });
+
   const gameIdToName = useMemo(() => {
     if (!games) {
       return {};
@@ -71,9 +73,6 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
         unitPrice === PRICE_NOT_FOUND
           ? PRICE_NOT_FOUND
           : unitPrice * missingCount;
-      if (unitPrice === -1) {
-        console.log('unitPrice', priceOverview);
-      }
 
       return { appId, userIdToGameFound, missingCount, unitPrice, totalPrice };
     });
@@ -188,7 +187,10 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {gameIdToName[appId]?.name ?? appId}
+                    <GameDisplay
+                      appid={appId}
+                      displayName={gameIdToName[appId]?.name}
+                    />
                   </TableCell>
                   {allUserIds.map((userId) => {
                     const found = userIdToGameFound[userId];

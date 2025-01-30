@@ -1,8 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Steam Game Coordinator
+
+A Next.js web application that helps groups of friends coordinate which Steam games they can play together. The app allows users to:
+
+- Search for Steam users by username or ID
+- View which games each user owns
+- Identify games that are shared between all users
+- See pricing information for missing games
+
+This tool is particularly useful for:
+- Planning game nights with friends
+- Finding multiplayer games everyone owns
+- Coordinating game purchases
+- Discovering which friends are missing specific games
 
 ## Getting Started
 
-First, run the development server:
+1. Create a `.env` file containing a Steam Web API key
+
+```bash
+
+2. Run the development server:
 
 ```bash
 npm run dev
@@ -14,23 +31,21 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Open [http://localhost:3000](http://localhost:3000) with your browser
+3. Start searching for Steam users to compare game libraries
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Disclaimer
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+⚠️ This project was quickly hacked together as a proof of concept and is not actively maintained. It may contain bugs, security issues, or break with Steam API changes. Use at your own risk.
 
-## Learn More
+## Technical Details
 
-To learn more about Next.js, take a look at the following resources:
+Built with:
+- [Next.js](https://nextjs.org)
+- React Query for data fetching
+- Material UI components
+- Steam Web API integration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+While this project isn't actively maintained, feel free to fork it and make your own improvements!

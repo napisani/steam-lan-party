@@ -27,6 +27,11 @@ export function UserSearch({
       searchType === 'username'
         ? { username: searchValue }
         : { id: searchValue };
+
+    if (JSON.stringify(entries).includes(JSON.stringify(newEntry))) {
+      return;
+    }
+
     onEntriesChange([...entries, newEntry]);
   };
 
@@ -58,6 +63,11 @@ export function UserSearch({
           label={searchType === 'username' ? 'Username' : 'ID'}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
           variant="outlined"
         />
         <Button variant="contained" onClick={handleSearch}>
