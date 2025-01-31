@@ -14,7 +14,9 @@ export function useSingleGames({ appid }: { appid: number | undefined }) {
       const respContent = await response.json();
       return respContent as any;
     },
-    enabled: !!appid,
+    // enabled: !!appid,
+    // TODO disabled for now to avoid hitting the API limit
+    enabled: false,
   });
 
   return {
