@@ -17,6 +17,7 @@ export function useSingleGames({ appid }: { appid: number | undefined }) {
     // enabled: !!appid,
     // TODO disabled for now to avoid hitting the API limit
     enabled: false,
+    staleTime: Infinity,
   });
 
   return {

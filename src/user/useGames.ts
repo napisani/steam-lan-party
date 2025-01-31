@@ -19,6 +19,8 @@ export function useGames({ appids }: { appids: number[] }) {
       const respContent = (await response.json())?.applist?.apps ?? [];
       return respContent as any[];
     },
+
+    staleTime: Infinity,
   });
 
   const gamePrices = useQueries(
@@ -36,6 +38,7 @@ export function useGames({ appids }: { appids: number[] }) {
         return respContent as any[];
       },
       enabled: batch.length > 0,
+      staleTime: Infinity,
     })),
   );
 

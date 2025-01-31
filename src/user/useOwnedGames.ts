@@ -18,6 +18,7 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
         return { userId, ...respContent } as OwnedGamesInfo;
       },
       enabled: !!userId,
+        staleTime: Infinity,
     })),
   );
 

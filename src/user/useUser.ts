@@ -26,9 +26,9 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
           return respContent.steamid;
         },
         enabled: !!entry.username,
+        staleTime: Infinity,
       })),
   );
-
   const allUserIdResults = useMemo(() => {
     return [
       ...results,
@@ -63,6 +63,7 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
         return respContent[0];
       },
       enabled: !!id,
+      staleTime: Infinity,
     })),
   );
 
