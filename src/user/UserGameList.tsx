@@ -84,9 +84,12 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
         return b[sortField] - a[sortField];
       }
     });
-  }, [userIdToGames, allUserIds, allUserGames, sortField, sortOrder]);
+  }, [allUserGames, allUserIds, gameIdToName, userIdToGames, sortField]);
 
-  const maxTotalPrice = Math.max(...rows.map((r) => r.totalPrice));
+  const maxTotalPrice = useMemo(
+    () => Math.max(...rows.map((r) => r.totalPrice)),
+    [rows],
+  );
 
   const handleSortChange = (
     field: 'missingCount' | 'unitPrice' | 'totalPrice',

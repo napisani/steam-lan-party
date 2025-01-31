@@ -18,7 +18,7 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
         return { userId, ...respContent } as OwnedGamesInfo;
       },
       enabled: !!userId,
-        staleTime: Infinity,
+      staleTime: Infinity,
     })),
   );
 
@@ -30,17 +30,21 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
       )
       .map((userId, i) => [userId, results[i].data]);
     return Object.fromEntries(pairs);
-  }, [results]);
+  }, [userIds, results]);
 
-  const isLoading = results.some((r) => r.isLoading);
-  const isError = results.some((r) => r.isError);
+  const isLoading = useMemo(() => results.some((r) => r.isLoading), [results]);
+  const isError = useMemo(() => results.some((r) => r.isError), [results]);
 
-  const allUserGames = Array.from(
-    new Set(
-      (results.map((r) => r.data).filter(Boolean) as OwnedGamesInfo[])
-        .flatMap((g) => g.games ?? [])
-        .map((g) => g.appid),
-    ),
+  const allUserGames = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (results.map((r) => r.data).filter(Boolean) as OwnedGamesInfo[])
+            .flatMap((g) => g.games ?? [])
+            .map((g) => g.appid),
+        ),
+      ),
+    [results],
   );
 
   return { userIdToGames, isLoading, isError, allUserGames };

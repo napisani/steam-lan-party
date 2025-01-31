@@ -1,7 +1,6 @@
 import { useQueries } from 'react-query';
 import { UserEntry } from './user.types';
 import { useMemo } from 'react';
-
 export function useUser({ entries }: { entries: UserEntry[] }) {
   const results = useQueries(
     entries
@@ -29,6 +28,7 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
         staleTime: Infinity,
       })),
   );
+
   const allUserIdResults = useMemo(() => {
     return [
       ...results,
@@ -41,11 +41,13 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
           error: null,
         })),
     ];
-  }, [results]);
+  }, [results, entries]);
 
-  const allUserIds = allUserIdResults
-    .map((r) => r.data)
-    .filter(Boolean) as string[];
+  const allUserIds = useMemo(() => 
+    allUserIdResults
+      .map((r) => r.data)
+      .filter(Boolean) as string[],
+  [allUserIdResults]);
 
   const userDetailResults = useQueries(
     allUserIds.map((id) => ({
@@ -67,17 +69,24 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
     })),
   );
 
-  const isLoading =
+  const isLoading = useMemo(() =>
     allUserIdResults.some((r) => r.isLoading) ||
-    userDetailResults.some((r) => r.isLoading);
-  const isError =
-    allUserIdResults.some((r) => r.isError) ||
-    userDetailResults.some((r) => r.isError);
-  const error =
-    allUserIdResults.find((r) => r.isError)?.error ??
-    userDetailResults.find((r) => r.isError)?.error;
+    userDetailResults.some((r) => r.isLoading),
+  [allUserIdResults, userDetailResults]);
 
-  const allUserDetails = userDetailResults.map((r) => r.data);
+  const isError = useMemo(() =>
+    allUserIdResults.some((r) => r.isError) ||
+    userDetailResults.some((r) => r.isError),
+  [allUserIdResults, userDetailResults]);
+
+  const error = useMemo(() =>
+    allUserIdResults.find((r) => r.isError)?.error ??
+    userDetailResults.find((r) => r.isError)?.error,
+  [allUserIdResults, userDetailResults]);
+
+  const allUserDetails = useMemo(() => 
+    userDetailResults.map((r) => r.data),
+  [userDetailResults]);
 
   return {
     allUserIdResults,
