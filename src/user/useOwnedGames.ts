@@ -17,6 +17,7 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
         const respContent: any = (await response.json())?.response ?? {};
         return { userId, ...respContent } as OwnedGamesInfo;
       },
+      enabled: !!userId,
     })),
   );
 

@@ -25,6 +25,7 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
           }
           return respContent.steamid;
         },
+        enabled: !!entry.username,
       })),
   );
 
@@ -61,6 +62,7 @@ export function useUser({ entries }: { entries: UserEntry[] }) {
 
         return respContent[0];
       },
+      enabled: !!id,
     })),
   );
 
