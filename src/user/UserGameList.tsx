@@ -78,6 +78,9 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
     });
 
     return unsortedRows.sort((a, b) => {
+      if(!a || !b) {
+        return 0;
+      }
       if (sortOrder === 'asc') {
         return a[sortField] - b[sortField];
       } else {

@@ -9,7 +9,7 @@ export function UserDisplay({ userId }: { userId: string }) {
     (d) => d?.steamid === firstUserId,
   );
   const { userIdToGames } = useOwnedGames({ userIds: [firstUserId] });
-  const firstUserGames = userIdToGames[firstUserId];
+  const firstUserGames = userIdToGames?.[firstUserId];
   const isPrivate = !!firstUserGames && !('games' in firstUserGames);
   return (
     <>

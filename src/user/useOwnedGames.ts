@@ -26,9 +26,9 @@ export function useOwnedGames({ userIds }: { userIds: string[] }) {
     const pairs = userIds
       .filter(
         (_, i) =>
-          !results[i].isLoading && !results[i].isError && results[i].data,
+          !results[i].isLoading && !results[i].isError && results?.[i]?.data,
       )
-      .map((userId, i) => [userId, results[i].data]);
+      .map((userId, i) => [userId, results?.[i].data]);
     return Object.fromEntries(pairs);
   }, [userIds, results]);
 

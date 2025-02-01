@@ -58,7 +58,7 @@ export function useGames({ appids }: { appids: number[] }) {
       Object.entries(result.data ?? {}).map(([key, { data }]) => ({
         ...data,
         appid: key,
-        name: idToName[key],
+        name: idToName?.[key],
       })),
     );
     return gl;
