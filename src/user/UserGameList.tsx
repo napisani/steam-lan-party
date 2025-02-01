@@ -53,21 +53,21 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
   const rows = useMemo(() => {
     const unsortedRows = allUserGames.map((appId) => {
       const missingCount = allUserIds.reduce((acc, userId) => {
-        const found = !!userIdToGames[userId]?.games?.find(
+        const found = !!userIdToGames?.[userId]?.games?.find(
           (g: OwnedGameInfo) => g.appid === appId,
         );
         return acc + (found ? 0 : 1);
       }, 0);
       const userIdToGameFound = Object.fromEntries(
         allUserIds.map((userId) => {
-          const found = !!userIdToGames[userId]?.games?.find(
+          const found = !!userIdToGames?.[userId]?.games?.find(
             (g: OwnedGameInfo) => g.appid === appId,
           );
           return [userId, found];
         }),
       );
 
-      const priceOverview = gameIdToName[appId]?.price_overview ?? {};
+      const priceOverview = gameIdToName?.[appId]?.price_overview ?? {};
       const unitPrice = priceOverview.final ?? PRICE_NOT_FOUND;
       const totalPrice =
         unitPrice === PRICE_NOT_FOUND
@@ -192,11 +192,11 @@ export function UserGameList({ entries }: { entries: UserEntry[] }) {
                   <TableCell component="th" scope="row">
                     <GameDisplay
                       appid={appId}
-                      displayName={gameIdToName[appId]?.name}
+                      displayName={gameIdToName?.[appId]?.name}
                     />
                   </TableCell>
                   {allUserIds.map((userId) => {
-                    const found = userIdToGameFound[userId];
+                    const found = userIdToGameFound?.[userId];
                     return (
                       <TableCell align="right" key={'userApp' + userId + appId}>
                         {found ? 'Yes' : 'No'}
